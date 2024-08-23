@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>namasdev.Core</id>
+    <version>1.0.0</version>
+    <title>namasdev Core</title>
+    <authors>Matias Alberto Lopez</authors>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <!-- <icon>icon.png</icon> -->
+    <projectUrl>https://github.com/MatiasALopez/namasdev.Core</projectUrl>
+    <description>namasdev Core library</description>
+    <releaseNotes></releaseNotes>
+    <copyright>2024</copyright>
+    <tags>namasdev</tags>
+	<dependencies>
+      <dependency id="System.Linq.Dynamic" version="1.0.8" />
+    </dependencies>
+  </metadata>
+</package>
