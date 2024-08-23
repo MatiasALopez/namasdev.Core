@@ -47,7 +47,7 @@ namespace namasdev.Core.Types
         public TrimestreYAño(DateTime fecha)
         {
             Año = (short)fecha.Year;
-            Trimestre = Convert.ToInt16(Math.Ceiling(fecha.Month / 3m));
+            Trimestre = Convert.ToInt16(System.Math.Ceiling(fecha.Month / 3m));
         }
 
         public short Trimestre { get; set; }

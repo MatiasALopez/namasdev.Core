@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 using namasdev.Core.Reflection;
 
-namespace namasdev.Core.Tipos
+namespace namasdev.Core.Types
 {
     public static class EnumExtensions
     {

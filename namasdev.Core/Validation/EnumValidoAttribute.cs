@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-using namasdev.Core.Tipos;
+using namasdev.Core.Types;
 
 namespace namasdev.Core.Validation
 {

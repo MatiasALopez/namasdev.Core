@@ -54,7 +54,7 @@
     <Compile Include="IO\ArchivoExtensiones.cs" />
     <Compile Include="IO\PathHelper.cs" />
     <Compile Include="IO\StreamExtensiones.cs" />
-    <Compile Include="Math\MathHelper.cs" />
+    <Compile Include="MathHelper.cs" />
     <Compile Include="Processing\ArchivoTexto.cs" />
     <Compile Include="Processing\BatchArgs.cs" />
     <Compile Include="Processing\ProcesadorHelper.cs" />

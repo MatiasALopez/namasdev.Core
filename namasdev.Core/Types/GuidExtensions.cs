@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace namasdev.Core
+namespace namasdev.Core.Types
 {
     public static class GuidExtensions
     {

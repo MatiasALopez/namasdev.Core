@@ -1,6 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
-namespace Disercoin.Core.Math
+namespace namasdev.Core
 {
     public class MathHelper
     {
@@ -166,14 +167,14 @@ namespace Disercoin.Core.Math
         private static decimal AplicarDigitosRedondeo(decimal valor, int? digitosRedondeo)
         {
             return digitosRedondeo.HasValue
-                ? System.Math.Round(valor, digitosRedondeo.Value)
+                ? Math.Round(valor, digitosRedondeo.Value)
                 : valor;
         }
 
         private static double AplicarDigitosRedondeo(double valor, int? digitosRedondeo)
         {
             return digitosRedondeo.HasValue
-                ? System.Math.Round(valor, digitosRedondeo.Value)
+                ? Math.Round(valor, digitosRedondeo.Value)
                 : valor;
         }
     }

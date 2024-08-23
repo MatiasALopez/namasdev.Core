@@ -1,10 +1,11 @@
-﻿using namasdev.Core.Validation;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
+
+using namasdev.Core.Validation;
 
 namespace namasdev.Core.Types
 {
@@ -70,7 +71,7 @@ namespace namasdev.Core.Types
             int textoCantLineas = 1;
             if (cantMaximaCaracteresPorLinea.HasValue)
             {
-                textoCantLineas = (int)Math.Ceiling((decimal)texto.Length / cantMaximaCaracteresPorLinea.Value);
+                textoCantLineas = (int)System.Math.Ceiling((decimal)texto.Length / cantMaximaCaracteresPorLinea.Value);
             }
             return $"{texto}{String.Join("", Enumerable.Repeat(Environment.NewLine, cantLineas > textoCantLineas ? cantLineas - textoCantLineas : 0))}";
         }
