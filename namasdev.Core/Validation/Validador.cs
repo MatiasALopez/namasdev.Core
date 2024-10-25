@@ -27,28 +27,8 @@ namespace namasdev.Core.Validation
         public const string FORMATO_NO_VALIDO_TEXTO_FORMATO = "{0} no tiene el formato válido.";
         public const string FORMATO_EMAIL_NO_VALIDO_TEXTO_FORMATO = "{0} no es un correo válido.";
         public const string FORMATO_DEBE_SER_VACIO = "{0} debe ser vacío.";
-
-        public static void ValidarArgumentRequeridoYThrow(object valor, string nombre)
-        {
-            ValidarRequeridoYThrow<ArgumentNullException>(valor, nombre);
-        }
-
-        public static void ValidarRequeridoYThrow<TException>(object valor, string mensaje)
-            where TException : Exception
-        {
-            if (String.IsNullOrWhiteSpace(Convert.ToString(valor)))
-            {
-                throw ReflectionHelper.CrearInstancia<TException>(mensaje);
-            }
-        }
-
-        public static IEnumerable<ValidationResult> ObtenerValidationResults<T>(T objeto)
-            where T : class
-        {
-            var res = new List<ValidationResult>();
-            Validator.TryValidateObject(objeto, new ValidationContext(objeto), res, true);
-            return res;
-        }
+        public const string REQUERIDO_LISTA_FORMATO_DEBE_SER_VACIO = "{0} debe contener al menos un elemento válido.";
+        public const string IP_NO_VALIDA_TEXTO_FORMATO = "{0} no es una IP válida";
 
         public static void Validar<TObjeto>(TObjeto objeto,
             string mensajeEncabezado = null)
@@ -69,46 +49,57 @@ namespace namasdev.Core.Validation
             }
         }
 
-        public static bool ValidarArchivoYAgregarAListaErrores(Archivo archivo, bool requerido, List<string> errores,
-            string descripcion = null,
-            IEnumerable<string> extensiones = null)
+        public static IEnumerable<ValidationResult> ObtenerValidationResults<T>(T objeto)
+            where T : class
         {
-            if (errores == null)
-            {
-                throw new ArgumentNullException(nameof(errores));
-            }
-
-            string mensajeError;
-            if (!ValidarArchivo(archivo, requerido,
-                out mensajeError,
-                descripcion, extensiones))
-            {
-                errores.Add(mensajeError);
-                return false;
-            }
-
-            return true;
+            var res = new List<ValidationResult>();
+            Validator.TryValidateObject(objeto, new ValidationContext(objeto), res, true);
+            return res;
         }
 
-        public static bool ValidarArchivoYAgregarAListaErrores(Archivo archivo, bool requerido, List<string> errores,
-            string descripcion = null,
-            string extensiones = null)
+        public static void ValidarArgumentRequeridoYThrow(object valor, string nombre)
         {
-            if (errores == null)
-            {
-                throw new ArgumentNullException(nameof(errores));
-            }
+            ValidarRequeridoYThrow<ArgumentNullException>(valor, nombre);
+        }
 
-            string mensajeError;
-            if (!ValidarArchivo(archivo, requerido,
-                out mensajeError,
-                descripcion, extensiones))
-            {
-                errores.Add(mensajeError);
-                return false;
-            }
+        public static void ValidarArgumentListaRequeridaYThrow<TEntidad>(IEnumerable<TEntidad> lista, string nombre,
+            bool validarNoVacia = true,
+            Func<TEntidad, bool> validacionItem = null)
+        {
+            ValidarListaRequeridaYThrow<ArgumentNullException, TEntidad>(lista, nombre,
+                validarNoVacia: validarNoVacia,
+                validacionItem: validacionItem);
+        }
 
-            return true;
+        public static void ValidarRequeridoYThrow<TException>(object valor, string mensaje)
+            where TException : Exception
+        {
+            if (String.IsNullOrWhiteSpace(Convert.ToString(valor)))
+            {
+                throw ReflectionHelper.CrearInstancia<TException>(mensaje);
+            }
+        }
+
+        public static void ValidarListaRequeridaYThrow<TException, TEntidad>(IEnumerable<TEntidad> lista, string mensaje,
+            bool validarNoVacia = true,
+            Func<TEntidad, bool> validacionItem = null)
+            where TException : Exception
+        {
+            validacionItem = validacionItem ?? (e => true);
+
+            if (lista == null
+                || (validarNoVacia && !lista.Any(i => validacionItem(i))))
+            {
+                throw ReflectionHelper.CrearInstancia<TException>(mensaje);
+            }
+        }
+
+        public static void ValidarEntidadExistenteYThrow(object entidad, object id, string nombreEntidad)
+        {
+            if (entidad == null)
+            {
+                throw new Exception(String.Format(ENTIDAD_INEXISTENTE_TEXTO_FORMATO, nombreEntidad, id));
+            }
         }
 
         public static bool ValidarArchivo(Archivo archivo, bool requerido,
@@ -116,7 +107,7 @@ namespace namasdev.Core.Validation
             string descripcion = null,
             string extensiones = null)
         {
-            IEnumerable<string> extensionesLista = 
+            IEnumerable<string> extensionesLista =
                 !string.IsNullOrWhiteSpace(extensiones)
                 ? ObtenerListaExtensiones(extensiones)
                 : null;
@@ -124,6 +115,24 @@ namespace namasdev.Core.Validation
             return ValidarArchivo(archivo, requerido,
                 out mensaje,
                 descripcion, extensionesLista);
+        }
+
+        public static bool ValidarArchivoYAgregarAListaErrores(Archivo archivo, bool requerido, 
+            List<string> errores,
+            string descripcion = null,
+            string extensiones = null)
+        {
+            return ValidarYAgregarAListaErrores(
+                () =>
+                {
+                    ValidarArchivo(archivo, requerido,
+                        out string mensajeError,
+                        descripcion: descripcion,
+                        extensiones: extensiones);
+
+                    return mensajeError;
+                },
+                errores);
         }
 
         public static bool ValidarArchivo(Archivo archivo, bool requerido,
@@ -157,24 +166,69 @@ namespace namasdev.Core.Validation
             return true;
         }
 
+        public static bool ValidarArchivoYAgregarAListaErrores(Archivo archivo, bool requerido, 
+            List<string> errores,
+            string descripcion = null,
+            IEnumerable<string> extensiones = null)
+        {
+            return ValidarYAgregarAListaErrores(
+                () =>
+                {
+                    ValidarArchivo(archivo, requerido,
+                        out string mensajeError,
+                        descripcion: descripcion,
+                        extensiones: extensiones);
+
+                    return mensajeError;
+                },
+                errores);
+        }
+
         public static bool ValidarExtensionDeArchivo(string nombreArchivo, string extensiones,
             out string mensaje)
         {
             return ValidarExtensionDeArchivo(nombreArchivo, ObtenerListaExtensiones(extensiones), out mensaje);
         }
 
+        public static bool ValidarExtensionDeArchivoYAgregarAListaErrores(string nombreArchivo, string extensiones, 
+            List<string> errores)
+        {
+            return ValidarYAgregarAListaErrores(
+                () =>
+                {
+                    ValidarExtensionDeArchivo(nombreArchivo, extensiones,
+                        out string mensajeError);
+
+                    return mensajeError;
+                },
+                errores);
+        }
+
         public static bool ValidarExtensionDeArchivo(string nombreArchivo, IEnumerable<string> extensiones,
             out string mensaje)
         {
-            mensaje = null;
-
             if (!EsExtensionDeArchivoValida(nombreArchivo, extensiones))
             {
                 mensaje = String.Format("El archivo '{0}' no es válido. Extensiones válidas: {1}.", Path.GetFileName(nombreArchivo), String.Join(", ", extensiones));
                 return false;
             }
 
+            mensaje = null;
             return true;
+        }
+
+        public static bool ValidarExtensionDeArchivoYAgregarAListaErrores(string nombreArchivo, IEnumerable<string> extensiones, 
+            List<string> errores)
+        {
+            return ValidarYAgregarAListaErrores(
+                () =>
+                {
+                    ValidarExtensionDeArchivo(nombreArchivo, extensiones,
+                        out string mensajeError);
+
+                    return mensajeError;
+                },
+                errores);
         }
 
         public static bool EsExtensionDeArchivoValida(string nombreArchivo, string extensiones)
@@ -200,61 +254,6 @@ namespace namasdev.Core.Validation
             }
 
             return extensiones.Split(',');
-        }
-        
-        public static string MensajeDebeSerVacio(string nombre)
-        {
-            return String.Format(FORMATO_DEBE_SER_VACIO, nombre);
-        }
-
-        public static void ValidarEntidadExistente(object entidad, object id, string nombreEntidad)
-        {
-            if (entidad == null)
-            {
-                throw new Exception(String.Format(ENTIDAD_INEXISTENTE_TEXTO_FORMATO, nombreEntidad, id));
-            }
-        }
-
-        public static string MensajeEntidadInexistente(string entidad, object valorBusqueda)
-        {
-            return String.Format(ENTIDAD_INEXISTENTE_TEXTO_FORMATO, entidad, Convert.ToString(valorBusqueda));
-        }
-
-        public static string MensajeEntidadBorrada(string entidad, object valorBusqueda,
-            bool nombreEntidadEsFemenino = false)
-        {
-            return String.Format(ENTIDAD_BORRADA_TEXTO_FORMATO, entidad, nombreEntidadEsFemenino ? "a" : "o", Convert.ToString(valorBusqueda));
-        }
-
-        public static string MensajeRequerido(string nombre)
-        {
-            return String.Format(REQUERIDO_TEXTO_FORMATO, nombre);
-        }
-
-        public static string MensajeTextoTamañoMaximo(string nombre, int tamañoMaximo)
-        {
-            return String.Format(TAMAÑO_MAXIMO_TEXTO_FORMATO, nombre, tamañoMaximo);
-        }
-
-        public static bool ValidarStringYAgregarAListaErrores(string valor, string nombre, bool requerido,
-            List<string> errores,
-            int? tamañoMaximo = null, int? tamañoExacto = null, string regEx = null)
-        {
-            if (errores == null)
-            {
-                throw new ArgumentNullException(nameof(errores));
-            }
-
-            string mensajeError;
-            if (!ValidarString(valor, nombre, requerido,
-                out mensajeError,
-                tamañoMaximo: tamañoMaximo, tamañoExacto: tamañoExacto, regEx: regEx))
-            {
-                errores.Add(mensajeError);
-                return false;
-            }
-
-            return true;
         }
 
         public static bool ValidarString(string valor, string nombre, bool requerido,
@@ -296,6 +295,24 @@ namespace namasdev.Core.Validation
             return true;
         }
 
+        public static bool ValidarStringYAgregarAListaErrores(string valor, string nombre, bool requerido,
+            List<string> errores,
+            int? tamañoMaximo = null, int? tamañoExacto = null, string regEx = null)
+        {
+            return ValidarYAgregarAListaErrores(
+                () =>
+                {
+                    ValidarString(valor, nombre, requerido,
+                        out string mensajeError,
+                        tamañoMaximo: tamañoMaximo,
+                        tamañoExacto: tamañoExacto,
+                        regEx: regEx);
+
+                    return mensajeError;
+                },
+                errores);
+        }
+
         public static bool ValidarRangoFechas(DateTime fechaDesde, DateTime fechaHasta,
             out string mensajeError,
             int? cantMesesMax = null)
@@ -324,28 +341,28 @@ namespace namasdev.Core.Validation
             return true;
         }
 
-        public static bool ValidarRangoFechasMaxMeses(DateTime fechaDesde, DateTime fechaHasta, int cantMesesMax,
-            out string mensajeError)
+        public static bool ValidarRangoFechasYAgregarAListaErrores(DateTime fechaDesde, DateTime fechaHasta,
+            List<string> errores,
+            int? cantMesesMax = null)
         {
-            var cantMeses = new MesYAño(fechaDesde)
-                .CalcularDiferenciaEnMeses(new MesYAño(fechaHasta)) + 1;
+            return ValidarYAgregarAListaErrores(
+                () =>
+                {
+                    ValidarRangoFechas(fechaDesde, fechaHasta, 
+                        out string mensajeError, 
+                        cantMesesMax: cantMesesMax);
 
-            if (cantMeses > cantMesesMax)
-            {
-                mensajeError = String.Format(RANGO_FECHAS_CANT_MAX_MESES_TEXTO_FORMATO, cantMesesMax);
-                return false;
-            }
-
-            mensajeError = null;
-            return true;
+                    return mensajeError;
+                },
+                errores);
         }
 
-        public static bool ValidarEmail(string valor, string nombre,
+        public static bool ValidarEmail(string email, string nombre,
             out string mensajeError)
         {
             try
             {
-                new MailAddress(valor);
+                new MailAddress(email);
 
                 mensajeError = null;
                 return true;
@@ -357,11 +374,61 @@ namespace namasdev.Core.Validation
             }
         }
 
-        public static bool EsIPValida(string ipAddress)
+        public static bool ValidarEmailYAgregarAListaErrores(string email, string nombre,
+            List<string> errores)
+        {
+            return ValidarYAgregarAListaErrores(
+                () =>
+                {
+                    ValidarEmail(email, nombre,
+                        out string mensajeError);
+
+                    return mensajeError;
+                },
+                errores);
+        }
+
+        public static bool ValidarIP(string ipAddress, string nombre,
+            out string mensajeError)
         {
             IPAddress oIPAddress;
-            return IPAddress.TryParse(ipAddress, out oIPAddress)
-                && String.Equals(ipAddress, oIPAddress.ToString(), StringComparison.CurrentCultureIgnoreCase);
+            if (!IPAddress.TryParse(ipAddress, out oIPAddress)
+                || !String.Equals(ipAddress, oIPAddress.ToString(), StringComparison.CurrentCultureIgnoreCase))
+            {
+                mensajeError = String.Format(IP_NO_VALIDA_TEXTO_FORMATO, nombre);
+                return false;
+            }
+
+            mensajeError = null;
+            return true;
+        }
+
+        public static bool ValidarIPYAgregarAListaErrores(string ipAddress, string nombre,
+            List<string> errores)
+        {
+            return ValidarYAgregarAListaErrores(
+                () =>
+                {
+                    ValidarIP(ipAddress, nombre,
+                        out string mensajeError);
+
+                    return mensajeError;
+                },
+                errores);
+        }
+
+        private static bool ValidarYAgregarAListaErrores(Func<string> validacion, List<string> errores)
+        {
+            ValidarArgumentListaRequeridaYThrow(errores, nameof(errores), validarNoVacia: false);
+
+            string mensajeError = validacion();
+            if (!string.IsNullOrWhiteSpace(mensajeError))
+            {
+                errores.Add(mensajeError);
+                return false;
+            }
+
+            return true;
         }
 
         public static void LanzarExcepcionMensajeAlUsuarioSiExistenErrores(List<string> errores)
@@ -376,5 +443,35 @@ namespace namasdev.Core.Validation
                 throw new ExcepcionMensajeAlUsuario(Formateador.FormatoLista(errores, Environment.NewLine));
             }
         }
+
+        #region Mensajes
+
+        public static string MensajeDebeSerVacio(string nombre)
+        {
+            return String.Format(FORMATO_DEBE_SER_VACIO, nombre);
+        }
+
+        public static string MensajeEntidadInexistente(string entidad, object valorBusqueda)
+        {
+            return String.Format(ENTIDAD_INEXISTENTE_TEXTO_FORMATO, entidad, Convert.ToString(valorBusqueda));
+        }
+
+        public static string MensajeEntidadBorrada(string entidad, object valorBusqueda,
+            bool nombreEntidadEsFemenino = false)
+        {
+            return String.Format(ENTIDAD_BORRADA_TEXTO_FORMATO, entidad, nombreEntidadEsFemenino ? "a" : "o", Convert.ToString(valorBusqueda));
+        }
+
+        public static string MensajeRequerido(string nombre)
+        {
+            return String.Format(REQUERIDO_TEXTO_FORMATO, nombre);
+        }
+
+        public static string MensajeTextoTamañoMaximo(string nombre, int tamañoMaximo)
+        {
+            return String.Format(TAMAÑO_MAXIMO_TEXTO_FORMATO, nombre, tamañoMaximo);
+        }
+
+        #endregion
     }
 }

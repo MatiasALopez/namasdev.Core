@@ -50,9 +50,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Validation\ValidadorTests_ValidarString.cs" />
+    <Compile Include="Validation\ValidadorTests_ValidarListaRequeridaYThrow.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\namasdev.Core\namasdev.Core.csproj">
+      <Project>{c66403ad-7a66-45c6-81f3-a176ae036219}</Project>
+      <Name>namasdev.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
