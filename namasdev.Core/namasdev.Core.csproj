@@ -47,6 +47,17 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assembly\AssemblyHelper.cs" />
+    <Compile Include="Entity\Entidad.cs" />
+    <Compile Include="Entity\EntidadBorrado.cs" />
+    <Compile Include="Entity\EntidadCreado.cs" />
+    <Compile Include="Entity\EntidadCreadoBorrado.cs" />
+    <Compile Include="Entity\EntidadCreadoModificado.cs" />
+    <Compile Include="Entity\EntidadCreadoModificadoBorrado.cs" />
+    <Compile Include="Entity\IEntidad.cs" />
+    <Compile Include="Entity\IEntidadBorrado.cs" />
+    <Compile Include="Entity\IEntidadCreado.cs" />
+    <Compile Include="Entity\IEntidadExtensiones.cs" />
+    <Compile Include="Entity\IEntidadModificacion.cs" />
     <Compile Include="Exception\ExcepcionMensajeAlUsuario.cs" />
     <Compile Include="Exception\ExceptionHelper.cs" />
     <Compile Include="IO\Archivo.cs" />
