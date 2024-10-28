@@ -357,9 +357,20 @@ namespace namasdev.Core.Validation
                 errores);
         }
 
-        public static bool ValidarEmail(string email, string nombre,
+        public static bool ValidarEmail(string email, string nombre, bool requerido,
             out string mensajeError)
         {
+            if (!ValidarString(email, nombre, requerido, 
+                out mensajeError))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return true;
+            }
+
             try
             {
                 new MailAddress(email);
@@ -374,13 +385,13 @@ namespace namasdev.Core.Validation
             }
         }
 
-        public static bool ValidarEmailYAgregarAListaErrores(string email, string nombre,
+        public static bool ValidarEmailYAgregarAListaErrores(string email, string nombre, bool requerido,
             List<string> errores)
         {
             return ValidarYAgregarAListaErrores(
                 () =>
                 {
-                    ValidarEmail(email, nombre,
+                    ValidarEmail(email, nombre, requerido,
                         out string mensajeError);
 
                     return mensajeError;
