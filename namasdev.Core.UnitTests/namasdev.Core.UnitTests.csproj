@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Validation\ValidadorTests_ValidarRequeridoYThrow.cs" />
     <Compile Include="Validation\ValidadorTests_ValidarString.cs" />
     <Compile Include="Validation\ValidadorTests_ValidarListaRequeridaYThrow.cs" />
   </ItemGroup>

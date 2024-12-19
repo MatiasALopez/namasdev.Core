@@ -13,8 +13,5 @@
     <releaseNotes></releaseNotes>
     <copyright>2024</copyright>
     <tags>namasdev</tags>
-    <dependencies>
-      <dependency id="System.Linq.Dynamic" version="1.0.8" />
-    </dependencies>
   </metadata>
 </package>

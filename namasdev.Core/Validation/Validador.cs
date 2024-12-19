@@ -29,6 +29,9 @@ namespace namasdev.Core.Validation
         public const string FORMATO_DEBE_SER_VACIO = "{0} debe ser vacío.";
         public const string REQUERIDO_LISTA_FORMATO_DEBE_SER_VACIO = "{0} debe contener al menos un elemento válido.";
         public const string IP_NO_VALIDA_TEXTO_FORMATO = "{0} no es una IP válida";
+        public const string NUMERO_MAYOR_A_TEXTO_FORMATO = "{0} debe ser un número mayor a {1}.";
+        public const string NUMERO_MENOR_A_TEXTO_FORMATO = "{0} debe ser un número menos a {1}.";
+        public const string NUMERO_RANGO_TEXTO_FORMATO = "{0} debe ser un número entre {1} y {2}.";
 
         public static void Validar<TObjeto>(TObjeto objeto,
             string mensajeEncabezado = null)
@@ -74,7 +77,8 @@ namespace namasdev.Core.Validation
         public static void ValidarRequeridoYThrow<TException>(object valor, string mensaje)
             where TException : Exception
         {
-            if (String.IsNullOrWhiteSpace(Convert.ToString(valor)))
+            if (valor == null
+                || (valor is string && String.IsNullOrWhiteSpace((string)valor)))
             {
                 throw ReflectionHelper.CrearInstancia<TException>(mensaje);
             }
@@ -426,6 +430,146 @@ namespace namasdev.Core.Validation
                     return mensajeError;
                 },
                 errores);
+        }
+
+        public static bool ValidarNumeroYAgregarAListaErrores(decimal? valor, string nombre, bool requerido,
+            List<string> errores,
+            decimal? valorMinimo = null, decimal? valorMaximo = null,
+            int cantDecimales = 2)
+        {
+            return ValidarYAgregarAListaErrores(
+                () =>
+                {
+                    ValidarNumero(valor, nombre, requerido,
+                        out string mensajeError,
+                        valorMinimo: valorMinimo, valorMaximo: valorMaximo,
+                        cantDecimales: cantDecimales);
+
+                    return mensajeError;
+                },
+                errores);
+        }
+
+        public static bool ValidarNumero(decimal? valor, string nombre, bool requerido,
+            out string mensajeError,
+            decimal? valorMinimo = null, decimal? valorMaximo = null,
+            int cantDecimales = 2)
+        {
+            if (!valor.HasValue)
+            {
+                if (requerido)
+                {
+                    mensajeError = String.Format(REQUERIDO_TEXTO_FORMATO, nombre);
+                    return false;
+                }
+            }
+            else
+            {
+                if (valorMinimo.HasValue && valorMaximo.HasValue)
+                {
+                    if (valor < valorMinimo
+                        || valor > valorMaximo)
+                    {
+                        mensajeError = String.Format(NUMERO_RANGO_TEXTO_FORMATO, nombre, Formateador.FormatoNumero(valorMinimo, cantDecimales: cantDecimales), Formateador.FormatoNumero(valorMaximo, cantDecimales: cantDecimales));
+                        return false;
+                    }
+                }
+                else if (valorMinimo.HasValue)
+                {
+                    if (valor < valorMinimo)
+                    {
+                        mensajeError = String.Format(NUMERO_MAYOR_A_TEXTO_FORMATO, nombre, Formateador.FormatoNumero(valorMinimo, cantDecimales: cantDecimales));
+                        return false;
+                    }
+                }
+                else if (valorMaximo.HasValue)
+                {
+                    if (valor > valorMaximo)
+                    {
+                        mensajeError = String.Format(NUMERO_MENOR_A_TEXTO_FORMATO, nombre, Formateador.FormatoNumero(valorMaximo, cantDecimales: cantDecimales));
+                        return false;
+                    }
+                }
+            }
+
+            mensajeError = null;
+            return true;
+        }
+
+        public static bool ValidarNumeroYAgregarAListaErrores(int? valor, string nombre, bool requerido,
+            List<string> errores,
+            int? valorMinimo = null, int? valorMaximo = null)
+        {
+            return ValidarNumeroYAgregarAListaErrores((decimal?)valor, nombre, requerido,
+                errores,
+                valorMinimo: valorMinimo, valorMaximo: valorMaximo);
+        }
+
+        public static bool ValidarNumero(int? valor, string nombre, bool requerido,
+            out string mensajeError,
+            int? valorMinimo = null, int? valorMaximo = null)
+        {
+            return ValidarNumero((decimal?)valor, nombre, requerido,
+                out mensajeError,
+                valorMinimo: valorMinimo, valorMaximo: valorMaximo);
+        }
+
+        public static bool ValidarNumeroYAgregarAListaErrores(short? valor, string nombre, bool requerido,
+            List<string> errores,
+            short? valorMinimo = null, short? valorMaximo = null)
+        {
+            return ValidarNumeroYAgregarAListaErrores((decimal?)valor, nombre, requerido,
+                errores,
+                valorMinimo: valorMinimo, valorMaximo: valorMaximo);
+        }
+
+        public static bool ValidarNumero(short? valor, string nombre, bool requerido,
+            out string mensajeError,
+            short? valorMinimo = null, short? valorMaximo = null)
+        {
+            return ValidarNumero((decimal?)valor, nombre, requerido,
+                out mensajeError,
+                valorMinimo: valorMinimo, valorMaximo: valorMaximo);
+        }
+
+        public static bool ValidarNumeroYAgregarAListaErrores(long? valor, string nombre, bool requerido,
+            List<string> errores,
+            long? valorMinimo = null, long? valorMaximo = null)
+        {
+            return ValidarNumeroYAgregarAListaErrores((decimal?)valor, nombre, requerido,
+                errores,
+                valorMinimo: valorMinimo, valorMaximo: valorMaximo);
+        }
+
+        public static bool ValidarNumero(long? valor, string nombre, bool requerido,
+            out string mensajeError,
+            long? valorMinimo = null, long? valorMaximo = null)
+        {
+            return ValidarNumero((decimal?)valor, nombre, requerido,
+                out mensajeError,
+                valorMinimo: valorMinimo, valorMaximo: valorMaximo);
+        }
+
+        public static bool ValidarNumeroYAgregarAListaErrores(double? valor, string nombre, bool requerido,
+            List<string> errores,
+            double? valorMinimo = null, double? valorMaximo = null,
+            int cantDecimales = 2)
+        {
+            return ValidarNumeroYAgregarAListaErrores((decimal?)valor, nombre, requerido,
+                errores,
+                valorMinimo: (decimal?)valorMinimo, valorMaximo: (decimal?)valorMaximo,
+                cantDecimales: cantDecimales);
+        }
+
+        public static bool ValidarNumero(double? valor, string nombre, bool requerido,
+            out string mensajeError,
+            double? valorMinimo = null, double? valorMaximo = null,
+            int cantDecimales = 2)
+        {
+            return ValidarNumero((decimal?)valor, nombre, requerido,
+                out mensajeError,
+                valorMinimo: (decimal?)valorMinimo, valorMaximo: (decimal?)valorMaximo,
+                cantDecimales: cantDecimales);
         }
 
         private static bool ValidarYAgregarAListaErrores(Func<string> validacion, List<string> errores)
