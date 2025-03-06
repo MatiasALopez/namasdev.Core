@@ -66,10 +66,10 @@
     <Compile Include="IO\PathHelper.cs" />
     <Compile Include="IO\StreamExtensiones.cs" />
     <Compile Include="MathHelper.cs" />
-    <Compile Include="Processing\ArchivoTexto.cs" />
+    <Compile Include="IO\ArchivoTexto.cs" />
     <Compile Include="Processing\BatchArgs.cs" />
     <Compile Include="Processing\ProcesadorHelper.cs" />
-    <Compile Include="Processing\RegistroTexto.cs" />
+    <Compile Include="IO\RegistroTexto.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\ReflectionUtilidades.cs" />
     <Compile Include="Tasks\AsyncHelper.cs" />

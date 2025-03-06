@@ -31,9 +31,11 @@ namespace namasdev.Core.IO
 
         public class Application
         {
-            public const string EXCEL = ".xlsx";
             public const string PDF = ".pdf";
+            public const string EXCEL = ".xlsx";
+            public const string EXCEL_97_2003 = ".xls";
             public const string WORD = ".docx";
+            public const string WORD_97_2003 = ".doc";
             public const string ZIP = ".zip";
         }
     }

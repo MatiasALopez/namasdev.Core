@@ -5,7 +5,7 @@ using System.Linq;
 
 using namasdev.Core.Types;
 
-namespace namasdev.Core.Processing
+namespace namasdev.Core.IO
 {
     public abstract class RegistroTexto
     {

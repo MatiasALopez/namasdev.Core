@@ -4,9 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using namasdev.Core.IO;
+using namasdev.Core.Processing;
 
-namespace namasdev.Core.Processing
+namespace namasdev.Core.IO
 {
     public class ArchivoTexto
     {

@@ -35,9 +35,11 @@ namespace namasdev.Core.IO
 		public class Application
 		{
 			public const string EXCEL = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-			public const string PDF = "application/pdf";
+            public const string EXCEL_97_2003 = "application/vnd.ms-excel";
 			public const string WORD = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-			public const string ZIP = "application/x-zip-compressed";
+            public const string WORD_97_2003 = "application/msword";
+            public const string PDF = "application/pdf";
+            public const string ZIP = "application/x-zip-compressed";
 		}
 
 		private static readonly Dictionary<string, string> _contentTypesPorExtensiones = new Dictionary<string, string>(StringComparer.CurrentCultureIgnoreCase)
@@ -59,10 +61,12 @@ namespace namasdev.Core.IO
 			{ ArchivoExtensiones.Text.TXT, "text/plain" },
 			{ ArchivoExtensiones.Text.XML, "text/xml" },
 
+            { ArchivoExtensiones.Application.PDF, "application/pdf" },
 			{ ArchivoExtensiones.Application.EXCEL, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
-			{ ArchivoExtensiones.Application.PDF, "application/pdf" },
+            { ArchivoExtensiones.Application.EXCEL_97_2003, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" },
 			{ ArchivoExtensiones.Application.WORD, "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
-			{ ArchivoExtensiones.Application.ZIP, "application/x-zip-compressed" },
+            { ArchivoExtensiones.Application.WORD_97_2003, "application/vnd.openxmlformats-officedocument.wordprocessingml.document" },
+            { ArchivoExtensiones.Application.ZIP, "application/x-zip-compressed" },
 		};
 
 		public static string ObtenerContentType(string archivoNombre)
