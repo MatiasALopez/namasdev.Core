@@ -14,19 +14,22 @@ namespace namasdev.Core.Types
         public const string TEXTO_SI_CON_ACENTO = "Sí";
         public const string TEXTO_SI_SIN_ACENTO = "Si";
 
-        public static string FormatoDia(DateTime fecha)
+        public static string FormatoDia(DateTime fecha,
+            CultureInfo cultura = null)
         {
-            return FormatoDia(fecha.DayOfWeek);
+            return FormatoDia(fecha.DayOfWeek, cultura);
         }
 
-        public static string FormatoDia(int diaSemana)
+        public static string FormatoDia(int diaSemana,
+            CultureInfo cultura = null)
         {
-            return FormatoDia((DayOfWeek)diaSemana);
+            return FormatoDia((DayOfWeek)diaSemana, cultura);
         }
 
-        public static string FormatoDia(DayOfWeek diaSemana)
+        public static string FormatoDia(DayOfWeek diaSemana,
+            CultureInfo cultura = null)
         {
-            return CultureInfo.CurrentCulture.DateTimeFormat.GetDayName(diaSemana);
+            return (cultura ?? CultureInfo.CurrentCulture).DateTimeFormat.GetDayName(diaSemana);
         }
 
         public static string FormatoLista<T>(IEnumerable<T> valores, 
@@ -265,6 +268,32 @@ namespace namasdev.Core.Types
         public static string FormatoFechaYHoraStandard(DateTime fechaHora)
         {
             return fechaHora.ToString("s");
+        }
+
+        public static string FormatoTiempo(TimeSpan? tiempo,
+            string textoVacio = "")
+        {
+            return tiempo.HasValue
+                ? FormatoTiempo(tiempo)
+                : textoVacio;
+        }
+
+        public static string FormatoTiempo(TimeSpan tiempo)
+        {
+            var partes = new List<string>();
+            if (tiempo.Hours > 0)
+            {
+                partes.Add($"{tiempo:%h}h");
+            }
+            if (tiempo.Minutes > 0)
+            {
+                partes.Add($"{tiempo:mm}m");
+            }
+            if (tiempo.Seconds > 0)
+            {
+                partes.Add($"{tiempo:ss}s");
+            }
+            return FormatoLista(partes, " ");
         }
 
         public static string FormatoPorcentaje(double valor, 
