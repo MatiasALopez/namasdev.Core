@@ -30,8 +30,16 @@ namespace namasdev.Core.Validation
         public const string REQUERIDO_LISTA_FORMATO_DEBE_SER_VACIO = "{0} debe contener al menos un elemento válido.";
         public const string IP_NO_VALIDA_TEXTO_FORMATO = "{0} no es una IP válida";
         public const string NUMERO_MAYOR_A_TEXTO_FORMATO = "{0} debe ser un número mayor a {1}.";
-        public const string NUMERO_MENOR_A_TEXTO_FORMATO = "{0} debe ser un número menos a {1}.";
+        public const string NUMERO_MENOR_A_TEXTO_FORMATO = "{0} debe ser un número menor a {1}.";
         public const string NUMERO_RANGO_TEXTO_FORMATO = "{0} debe ser un número entre {1} y {2}.";
+        public const string FECHA_MAYOR_A_TEXTO_FORMATO = "{0} debe ser una {1} posterior a {2}.";
+        public const string FECHA_MENOR_A_TEXTO_FORMATO = "{0} debe ser una {1} anterior a {2}.";
+        public const string FECHA_RANGO_TEXTO_FORMATO = "{0} debe ser una {1} entre {2} y {3}.";
+        public const string RANGO_TIEMPO_NO_VALIDO_TEXTO_FORMATO = "{0} no es un rango de tiempo válido ({1} - {2}).";
+        public const string RANGO_TIEMPO_MIN_TEXTO_FORMATO = "{0} debe ser un rango de tiempo de {1} como mínimo.";
+        public const string RANGO_TIEMPO_MAX_TEXTO_FORMATO = "{0} debe ser un rango de tiempo de {1} como máximo.";
+        public const string RANGO_TIEMPO_RANGO_TEXTO_FORMATO = "{0} debe ser un rango de tiempo entre {1} y {2}.";
+        public const string RANGO_TIEMPO_RANGO_EXACTO_TEXTO_FORMATO = "{0} debe ser un rango de tiempo de {1}.";
 
         public static void Validar<TObjeto>(TObjeto objeto,
             string mensajeEncabezado = null)
@@ -570,6 +578,152 @@ namespace namasdev.Core.Validation
                 out mensajeError,
                 valorMinimo: (decimal?)valorMinimo, valorMaximo: (decimal?)valorMaximo,
                 cantDecimales: cantDecimales);
+        }
+
+        public static bool ValidarFecha(
+            DateTime? fecha, string nombre, bool requerido,
+            out string mensajeError,
+            DateTime? fechaMinima = null, DateTime? fechaMaxima = null,
+            bool incluirHora = false)
+        {
+            if (!fecha.HasValue)
+            {
+                if (requerido)
+                {
+                    mensajeError = String.Format(REQUERIDO_TEXTO_FORMATO, nombre);
+                    return false;
+                }
+            }
+            else
+            {
+                string textoFecha = $"Fecha{(incluirHora ? "/Hora" : string.Empty)}";
+
+                Func<DateTime?, string> formato;
+                if (incluirHora)
+                {
+                    formato = (f) => Formateador.FormatoFechaYHora(f);
+                }
+                else
+                {
+                    fecha = fecha.Value.Date;
+                    fechaMinima = fechaMinima?.Date;
+                    fechaMaxima = fechaMaxima?.Date;
+
+                    formato = (f) => Formateador.FormatoFecha(f);
+                }
+
+                if (fechaMinima.HasValue && fechaMaxima.HasValue)
+                {
+                    if (fecha < fechaMinima
+                        || fecha > fechaMaxima)
+                    {
+                        mensajeError = String.Format(FECHA_RANGO_TEXTO_FORMATO, nombre, textoFecha, formato(fechaMinima), formato(fechaMaxima));
+                        return false;
+                    }
+                }
+                else if (fechaMinima.HasValue)
+                {
+                    if (fecha < fechaMinima)
+                    {
+                        mensajeError = String.Format(FECHA_MAYOR_A_TEXTO_FORMATO, nombre, textoFecha, formato(fechaMinima));
+                        return false;
+                    }
+                }
+                else if (fechaMaxima.HasValue)
+                {
+                    if (fecha > fechaMaxima)
+                    {
+                        mensajeError = String.Format(FECHA_MENOR_A_TEXTO_FORMATO, nombre, textoFecha, formato(fechaMaxima));
+                        return false;
+                    }
+                }
+            }
+
+            mensajeError = null;
+            return true;
+        }
+
+        public static bool ValidarFechaYAgregarAListaErrores(
+            DateTime? fecha, string nombre, bool requerido,
+            List<string> errores,
+            DateTime? fechaMinima = null, DateTime? fechaMaxima = null,
+            bool incluirHora = false)
+        {
+            return ValidarYAgregarAListaErrores(
+                () =>
+                {
+                    ValidarFecha(fecha, nombre, requerido,
+                        out string mensajeError,
+                        fechaMinima: fechaMinima, fechaMaxima: fechaMaxima,
+                        incluirHora: incluirHora);
+                    
+                    return mensajeError;
+                },
+                errores);
+        }
+
+        public static bool ValidarRangoTiempo(
+            TimeSpan desde, TimeSpan hasta, string nombre,
+            out string mensajeError,
+            TimeSpan? tiempoMinimo = null, TimeSpan? tiempoMaximo = null)
+        {
+            if (desde > hasta)
+            {
+                mensajeError = String.Format(RANGO_TIEMPO_NO_VALIDO_TEXTO_FORMATO, nombre, Formateador.FormatoHora(desde), Formateador.FormatoHora(hasta));
+                return false;
+            }
+
+            var diffTiempo = hasta - desde;
+            if (tiempoMinimo.HasValue && tiempoMaximo.HasValue)
+            {
+                if (diffTiempo < tiempoMinimo
+                    || diffTiempo > tiempoMaximo)
+                {
+                    string formato =
+                        tiempoMinimo == tiempoMaximo
+                        ? RANGO_TIEMPO_RANGO_EXACTO_TEXTO_FORMATO
+                        : RANGO_TIEMPO_RANGO_TEXTO_FORMATO;
+
+                    mensajeError = String.Format(formato, nombre, Formateador.FormatoTiempo(tiempoMinimo.Value), Formateador.FormatoTiempo(tiempoMaximo.Value));
+                    return false;
+                }
+            }
+            else if (tiempoMinimo.HasValue)
+            {
+                if (diffTiempo < tiempoMinimo.Value)
+                {
+                    mensajeError = String.Format(RANGO_TIEMPO_MIN_TEXTO_FORMATO, nombre, Formateador.FormatoTiempo(tiempoMinimo.Value));
+                    return false;
+                }
+            }
+            else if (tiempoMaximo.HasValue)
+            {
+                if (diffTiempo > tiempoMaximo.Value)
+                {
+                    mensajeError = String.Format(RANGO_TIEMPO_MAX_TEXTO_FORMATO, nombre, Formateador.FormatoTiempo(tiempoMaximo.Value));
+                    return false;
+                }
+            }
+
+            mensajeError = null;
+            return true;
+        }
+
+        public static bool ValidarRangoTiempoYAgregarAListaErrores(
+            TimeSpan desde, TimeSpan hasta, string nombre,
+            List<string> errores,
+            TimeSpan? tiempoMinimo = null, TimeSpan? tiempoMaximo = null)
+        {
+            return ValidarYAgregarAListaErrores(
+                () =>
+                {
+                    ValidarRangoTiempo(desde, hasta, nombre,
+                        out string mensajeError,
+                        tiempoMinimo: tiempoMinimo, tiempoMaximo: tiempoMaximo);
+
+                    return mensajeError;
+                },
+                errores);
         }
 
         private static bool ValidarYAgregarAListaErrores(Func<string> validacion, List<string> errores)
