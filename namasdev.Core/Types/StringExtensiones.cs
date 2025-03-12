@@ -60,5 +60,12 @@ namespace namasdev.Core.Types
                 ? null
                 : valor;
         }
+
+        public static string TrimEnd(this string valor, string trimValor)
+        {
+            return valor.EndsWith(trimValor) 
+                ? valor.Substring(0, valor.Length - trimValor.Length) 
+                : valor;
+        }
     }
 }
