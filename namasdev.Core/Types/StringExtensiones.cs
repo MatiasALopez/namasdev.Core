@@ -54,10 +54,11 @@ namespace namasdev.Core.Types
                 : valor.Substring(0, tamaño) + (sufijo ?? String.Empty);
         }
 
-        public static string ValueNotEmptyOrNull(this string valor)
+        public static string ValueNotEmptyOrNull(this string valor,
+            string valorNull = null)
         {
             return String.IsNullOrWhiteSpace(valor)
-                ? null
+                ? (valorNull ?? null)
                 : valor;
         }
 
