@@ -72,7 +72,7 @@ namespace namasdev.Core.Types
         public static string ToFirstLetterLowercase(this string valor)
         {
             return
-                String.IsNullOrWhiteSpace(valor)
+                !String.IsNullOrWhiteSpace(valor)
                 ? valor.Substring(0, 1).ToLower() + valor.Substring(1)
                 : valor;
         }
