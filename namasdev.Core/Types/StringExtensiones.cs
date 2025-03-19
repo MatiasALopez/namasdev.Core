@@ -68,5 +68,13 @@ namespace namasdev.Core.Types
                 ? valor.Substring(0, valor.Length - trimValor.Length) 
                 : valor;
         }
+
+        public static string ToFirstLetterLowercase(this string valor)
+        {
+            return
+                String.IsNullOrWhiteSpace(valor)
+                ? valor.Substring(0, 1).ToLower() + valor.Substring(1)
+                : valor;
+        }
     }
 }
