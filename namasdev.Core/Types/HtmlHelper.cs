@@ -22,7 +22,7 @@ namespace namasdev.Core.Types
             }
 
             string tagLista = esListaOrdenada ? "ol" : "ul";
-            return $"<{tagLista}>{Formateador.FormatoLista(valores.Select(v => $"<li>{v}</li>"), separador: string.Empty)}</{tagLista}>";
+            return $"<{tagLista}>{Formateador.Lista(valores.Select(v => $"<li>{v}</li>"), separador: string.Empty)}</{tagLista}>";
         }
     }
 }

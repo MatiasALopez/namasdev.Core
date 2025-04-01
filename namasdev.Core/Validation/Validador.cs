@@ -56,7 +56,7 @@ namespace namasdev.Core.Validation
             var errores = ObtenerValidationResults(objeto);
             if (errores.Any())
             {
-                throw ReflectionHelper.CrearInstancia<TException>($"{(!String.IsNullOrWhiteSpace(mensajeEncabezado) ? $"{mensajeEncabezado}{Environment.NewLine}" : string.Empty)}{Formateador.FormatoLista(errores, separador: Environment.NewLine)}");
+                throw ReflectionHelper.CrearInstancia<TException>($"{(!String.IsNullOrWhiteSpace(mensajeEncabezado) ? $"{mensajeEncabezado}{Environment.NewLine}" : string.Empty)}{Formateador.Lista(errores, separador: Environment.NewLine)}");
             }
         }
 
@@ -331,7 +331,7 @@ namespace namasdev.Core.Validation
         {
             if (fechaDesde > fechaHasta)
             {
-                mensajeError = String.Format(RANGO_FECHAS_NO_VALIDO_TEXTO_FORMATO, Formateador.FormatoFecha(fechaDesde), Formateador.FormatoFecha(fechaHasta));
+                mensajeError = String.Format(RANGO_FECHAS_NO_VALIDO_TEXTO_FORMATO, Formateador.Fecha(fechaDesde), Formateador.Fecha(fechaHasta));
                 return false;
             }
             else
@@ -478,7 +478,7 @@ namespace namasdev.Core.Validation
                     if (valor < valorMinimo
                         || valor > valorMaximo)
                     {
-                        mensajeError = String.Format(NUMERO_RANGO_TEXTO_FORMATO, nombre, Formateador.FormatoNumero(valorMinimo, cantDecimales: cantDecimales), Formateador.FormatoNumero(valorMaximo, cantDecimales: cantDecimales));
+                        mensajeError = String.Format(NUMERO_RANGO_TEXTO_FORMATO, nombre, Formateador.Numero(valorMinimo, cantDecimales: cantDecimales), Formateador.Numero(valorMaximo, cantDecimales: cantDecimales));
                         return false;
                     }
                 }
@@ -486,7 +486,7 @@ namespace namasdev.Core.Validation
                 {
                     if (valor < valorMinimo)
                     {
-                        mensajeError = String.Format(NUMERO_MAYOR_A_TEXTO_FORMATO, nombre, Formateador.FormatoNumero(valorMinimo, cantDecimales: cantDecimales));
+                        mensajeError = String.Format(NUMERO_MAYOR_A_TEXTO_FORMATO, nombre, Formateador.Numero(valorMinimo, cantDecimales: cantDecimales));
                         return false;
                     }
                 }
@@ -494,7 +494,7 @@ namespace namasdev.Core.Validation
                 {
                     if (valor > valorMaximo)
                     {
-                        mensajeError = String.Format(NUMERO_MENOR_A_TEXTO_FORMATO, nombre, Formateador.FormatoNumero(valorMaximo, cantDecimales: cantDecimales));
+                        mensajeError = String.Format(NUMERO_MENOR_A_TEXTO_FORMATO, nombre, Formateador.Numero(valorMaximo, cantDecimales: cantDecimales));
                         return false;
                     }
                 }
@@ -601,7 +601,7 @@ namespace namasdev.Core.Validation
                 Func<DateTime?, string> formato;
                 if (incluirHora)
                 {
-                    formato = (f) => Formateador.FormatoFechaYHora(f);
+                    formato = (f) => Formateador.FechaYHora(f);
                 }
                 else
                 {
@@ -609,7 +609,7 @@ namespace namasdev.Core.Validation
                     fechaMinima = fechaMinima?.Date;
                     fechaMaxima = fechaMaxima?.Date;
 
-                    formato = (f) => Formateador.FormatoFecha(f);
+                    formato = (f) => Formateador.Fecha(f);
                 }
 
                 if (fechaMinima.HasValue && fechaMaxima.HasValue)
@@ -669,7 +669,7 @@ namespace namasdev.Core.Validation
         {
             if (desde > hasta)
             {
-                mensajeError = String.Format(RANGO_TIEMPO_NO_VALIDO_TEXTO_FORMATO, nombre, Formateador.FormatoHora(desde), Formateador.FormatoHora(hasta));
+                mensajeError = String.Format(RANGO_TIEMPO_NO_VALIDO_TEXTO_FORMATO, nombre, Formateador.Hora(desde), Formateador.Hora(hasta));
                 return false;
             }
 
@@ -684,7 +684,7 @@ namespace namasdev.Core.Validation
                         ? RANGO_TIEMPO_RANGO_EXACTO_TEXTO_FORMATO
                         : RANGO_TIEMPO_RANGO_TEXTO_FORMATO;
 
-                    mensajeError = String.Format(formato, nombre, Formateador.FormatoTiempo(tiempoMinimo.Value), Formateador.FormatoTiempo(tiempoMaximo.Value));
+                    mensajeError = String.Format(formato, nombre, Formateador.Tiempo(tiempoMinimo.Value), Formateador.Tiempo(tiempoMaximo.Value));
                     return false;
                 }
             }
@@ -692,7 +692,7 @@ namespace namasdev.Core.Validation
             {
                 if (diffTiempo < tiempoMinimo.Value)
                 {
-                    mensajeError = String.Format(RANGO_TIEMPO_MIN_TEXTO_FORMATO, nombre, Formateador.FormatoTiempo(tiempoMinimo.Value));
+                    mensajeError = String.Format(RANGO_TIEMPO_MIN_TEXTO_FORMATO, nombre, Formateador.Tiempo(tiempoMinimo.Value));
                     return false;
                 }
             }
@@ -700,7 +700,7 @@ namespace namasdev.Core.Validation
             {
                 if (diffTiempo > tiempoMaximo.Value)
                 {
-                    mensajeError = String.Format(RANGO_TIEMPO_MAX_TEXTO_FORMATO, nombre, Formateador.FormatoTiempo(tiempoMaximo.Value));
+                    mensajeError = String.Format(RANGO_TIEMPO_MAX_TEXTO_FORMATO, nombre, Formateador.Tiempo(tiempoMaximo.Value));
                     return false;
                 }
             }
@@ -749,7 +749,7 @@ namespace namasdev.Core.Validation
 
             if (errores.Any())
             {
-                throw new ExcepcionMensajeAlUsuario(Formateador.FormatoLista(errores, Environment.NewLine));
+                throw new ExcepcionMensajeAlUsuario(Formateador.Lista(errores, Environment.NewLine));
             }
         }
 

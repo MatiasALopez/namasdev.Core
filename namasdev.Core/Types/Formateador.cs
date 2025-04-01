@@ -14,25 +14,25 @@ namespace namasdev.Core.Types
         public const string TEXTO_SI_CON_ACENTO = "Sí";
         public const string TEXTO_SI_SIN_ACENTO = "Si";
 
-        public static string FormatoDia(DateTime fecha,
+        public static string Dia(DateTime fecha,
             CultureInfo cultura = null)
         {
-            return FormatoDia(fecha.DayOfWeek, cultura);
+            return Dia(fecha.DayOfWeek, cultura);
         }
 
-        public static string FormatoDia(int diaSemana,
+        public static string Dia(int diaSemana,
             CultureInfo cultura = null)
         {
-            return FormatoDia((DayOfWeek)diaSemana, cultura);
+            return Dia((DayOfWeek)diaSemana, cultura);
         }
 
-        public static string FormatoDia(DayOfWeek diaSemana,
+        public static string Dia(DayOfWeek diaSemana,
             CultureInfo cultura = null)
         {
             return (cultura ?? CultureInfo.CurrentCulture).DateTimeFormat.GetDayName(diaSemana);
         }
 
-        public static string FormatoLista<T>(IEnumerable<T> valores, 
+        public static string Lista<T>(IEnumerable<T> valores, 
             string separador = ",",
             bool excluirNulosOVacios = false)
         {
@@ -44,31 +44,31 @@ namespace namasdev.Core.Types
             return String.Join(separador, valores);
         }
 
-        public static string FormatoListaHoras(IEnumerable<TimeSpan> horas,
+        public static string ListaHoras(IEnumerable<TimeSpan> horas,
             string separador = ",")
         {
             return horas != null
-                ? FormatoLista(horas.Select(h => FormatoHora(h)), separador)
+                ? Lista(horas.Select(h => Hora(h)), separador)
                 : String.Empty;
         }
 
-        public static string FormatoClaveValor<TKey, TValue>(IDictionary<TKey, TValue> diccionario,
+        public static string ClaveValor<TKey, TValue>(IDictionary<TKey, TValue> diccionario,
             string separadorClaveValor = " : ",
             string separadorItems = ", ")
         {
             Validador.ValidarArgumentRequeridoYThrow(diccionario, nameof(diccionario));
 
-            return FormatoLista(diccionario.Select(it => $"{it.Key}{separadorClaveValor}{it.Value}"), separador: separadorItems);
+            return Lista(diccionario.Select(it => $"{it.Key}{separadorClaveValor}{it.Value}"), separador: separadorItems);
         }
 
-        public static string FormatoTexto(IEnumerable<string> lineas)
+        public static string Texto(IEnumerable<string> lineas)
         {
             return lineas != null
                 ? String.Join(Environment.NewLine, lineas)
                 : String.Empty;
         }
 
-        public static string FormatoTextoEnCantLineas(string texto, int cantLineas,
+        public static string TextoEnCantLineas(string texto, int cantLineas,
             int? cantMaximaCaracteresPorLinea = null)
         {
             int textoCantLineas = 1;
@@ -79,14 +79,14 @@ namespace namasdev.Core.Types
             return $"{texto}{String.Join("", Enumerable.Repeat(Environment.NewLine, cantLineas > textoCantLineas ? cantLineas - textoCantLineas : 0))}";
         }
 
-        public static string FormatoNombreArchivoDesdeUrl(string url)
+        public static string NombreArchivoDesdeUrl(string url)
         {
             return !String.IsNullOrWhiteSpace(url)
                 ? WebUtility.UrlDecode(Path.GetFileName(url))
                 : String.Empty;
         }
 
-        public static string FormatoNumero(int numero,
+        public static string Numero(int numero,
             CultureInfo cultura = null)
         {
             return cultura != null
@@ -94,15 +94,15 @@ namespace namasdev.Core.Types
                 : numero.ToString($"N0");
         }
 
-        public static string FormatoNumero(int? numero,
+        public static string Numero(int? numero,
             CultureInfo cultura = null)
         {
             return numero.HasValue
-                ? FormatoNumero(numero.Value, cultura)
+                ? Numero(numero.Value, cultura)
                 : String.Empty;
         }
 
-        public static string FormatoNumero(long numero,
+        public static string Numero(long numero,
             CultureInfo cultura = null)
         {
             return cultura != null
@@ -110,15 +110,15 @@ namespace namasdev.Core.Types
                 : numero.ToString($"N0");
         }
 
-        public static string FormatoNumero(long? numero,
+        public static string Numero(long? numero,
             CultureInfo cultura = null)
         {
             return numero.HasValue
-                ? FormatoNumero(numero.Value, cultura)
+                ? Numero(numero.Value, cultura)
                 : String.Empty;
         }
 
-        public static string FormatoNumero(decimal numero, 
+        public static string Numero(decimal numero, 
             int cantDecimales = 2,
             CultureInfo cultura = null)
         {
@@ -127,30 +127,48 @@ namespace namasdev.Core.Types
                 : numero.ToString($"N{cantDecimales}");
         }
 
-        public static string FormatoNumero(decimal? numero,
+        public static string Numero(decimal? numero,
             int cantDecimales = 2,
             CultureInfo cultura = null)
         {
             return numero.HasValue 
-                ? FormatoNumero(numero.Value, cantDecimales) 
+                ? Numero(numero.Value, cantDecimales) 
                 : String.Empty;
         }
 
-        public static string FormatoListaEmails(IEnumerable<string> emails)
+        public static string Numero(double numero,
+            int cantDecimales = 2,
+            CultureInfo cultura = null)
         {
-            return FormatoLista(emails);
+            return cultura != null
+                ? numero.ToString($"N{cantDecimales}", cultura)
+                : numero.ToString($"N{cantDecimales}");
         }
 
-        public static string FormatoMoneda(decimal? valor,
+        public static string Numero(double? numero,
+            int cantDecimales = 2,
+            CultureInfo cultura = null)
+        {
+            return numero.HasValue
+                ? Numero(numero.Value, cantDecimales)
+                : String.Empty;
+        }
+
+        public static string ListaEmails(IEnumerable<string> emails)
+        {
+            return Lista(emails);
+        }
+
+        public static string Moneda(decimal? valor,
             int cantDecimales = 2,
             CultureInfo cultura = null)
         {
             return valor.HasValue
-                ? FormatoMoneda(valor.Value, cantDecimales: cantDecimales, cultura: cultura)
+                ? Moneda(valor.Value, cantDecimales: cantDecimales, cultura: cultura)
                 : String.Empty;
         }
 
-        public static string FormatoMoneda(decimal valor,
+        public static string Moneda(decimal valor,
             int cantDecimales = 0,
             CultureInfo cultura = null)
         {
@@ -159,126 +177,162 @@ namespace namasdev.Core.Types
                 : valor.ToString($"C{cantDecimales}");
         }
 
-        public static string FormatoHtml(string valor)
+        public static string Porcentaje(double valor,
+            int cantDecimales = 0,
+            CultureInfo cultura = null)
+        {
+            return cultura != null
+                ? valor.ToString($"P{cantDecimales}", cultura)
+                : valor.ToString($"P{cantDecimales}");
+        }
+
+        public static string Porcentaje(double? valor,
+            int cantDecimales = 0,
+            CultureInfo cultura = null)
+        {
+            return valor.HasValue
+                ? Porcentaje(valor.Value, cantDecimales, cultura)
+                : "";
+        }
+
+        public static string Porcentaje(decimal valor,
+           int cantDecimales = 0,
+           CultureInfo cultura = null)
+        {
+            return cultura != null
+                ? valor.ToString($"P{cantDecimales}", cultura)
+                : valor.ToString($"P{cantDecimales}");
+        }
+
+        public static string Porcentaje(decimal? valor,
+            int cantDecimales = 0,
+            CultureInfo cultura = null)
+        {
+            return valor.HasValue
+                ? Porcentaje(valor.Value, cantDecimales, cultura)
+                : "";
+        }
+
+        public static string Html(string valor)
         {
             return !String.IsNullOrWhiteSpace(valor)
                 ? valor.Replace(Environment.NewLine, "<br/>")
                 : null;
         }
 
-        public static string FormatoSiNo(bool valor,
+        public static string SiNo(bool valor,
             bool usarAcento = true)
         {
             return valor ? (usarAcento ? TEXTO_SI_CON_ACENTO : TEXTO_SI_SIN_ACENTO) : "No";
         }
 
-        public static string FormatoNombreDiaYFecha(DateTime fecha,
+        public static string NombreDiaYFecha(DateTime fecha,
             string separador = " ")
         {
-            var diaSemana = FormatoDia((int)fecha.DayOfWeek);
-            return $"{diaSemana}{separador}{FormatoFecha(fecha)}";
+            var diaSemana = Dia((int)fecha.DayOfWeek);
+            return $"{diaSemana}{separador}{Fecha(fecha)}";
         }
 
-        public static string FormatoFechaTexto(DateTime fecha,
+        public static string FechaTexto(DateTime fecha,
             bool incluirNombreDia = true)
         {
             return fecha.ToString($@"{(incluirNombreDia ? "dddd, " : String.Empty)}dd \de MMMM \de yyyy");
         }
 
-        public static string FormatoFecha(DateTime? fecha,
+        public static string Fecha(DateTime? fecha,
              string textoVacio = "",
              string separador = "/")
         {
             return fecha.HasValue
-                ? FormatoFecha(fecha.Value, separador)
+                ? Fecha(fecha.Value, separador)
                 : textoVacio;
         }
 
-        public static string FormatoFecha(DateTime fecha,
+        public static string Fecha(DateTime fecha,
             string separador = "/")
         {
             return fecha.ToString($"dd{separador}MM{separador}yyyy");
         }
 
-        public static string FormatoFechaInvertido(DateTime? fecha,
+        public static string FechaInvertido(DateTime? fecha,
             string separador = "",
             string textoVacio = "")
         {
             return fecha.HasValue
-                ? FormatoFechaInvertido(fecha.Value, separador)
+                ? FechaInvertido(fecha.Value, separador)
                 : textoVacio;
         }
 
-        public static string FormatoFechaInvertido(DateTime fecha,
+        public static string FechaInvertido(DateTime fecha,
             string separador = "")
         {
             return $"{fecha:yyyy}{separador}{fecha:MM}{separador}{fecha:dd}";
         }
 
-        public static string FormatoFechaYHora(DateTime? fechaHora,
+        public static string FechaYHora(DateTime? fechaHora,
             string separadorFechaPartes = "/", string separadorHoraPartes = ":", string separadorFechaHora = " ",
             bool incluirSegundos = false,
             string textoVacio = "")
         {
             return fechaHora.HasValue
-                ? FormatoFechaYHora(fechaHora.Value, separadorFechaPartes, separadorHoraPartes, separadorFechaHora, incluirSegundos)
+                ? FechaYHora(fechaHora.Value, separadorFechaPartes, separadorHoraPartes, separadorFechaHora, incluirSegundos)
                 : textoVacio;
         }
 
-        public static string FormatoFechaYHora(DateTime fechaHora,
+        public static string FechaYHora(DateTime fechaHora,
             string separadorFechaPartes = "/", string separadorHoraPartes = ":", string separadorFechaHora = " ",
             bool incluirSegundos = false)
         {
             return fechaHora.ToString($"dd{separadorFechaPartes}MM{separadorFechaPartes}yyyy{separadorFechaHora}HH{separadorHoraPartes}mm{(incluirSegundos ? $"{separadorHoraPartes}ss" : String.Empty)}");
         }
 
-        public static string FormatoFechaYHoraInvertido(DateTime fechaHora,
+        public static string FechaYHoraInvertido(DateTime fechaHora,
             string separadorFechaPartes = "-", string separadorHoraPartes = ":", string separadorFechaHora = " ",
             bool incluirSegundos = false)
         {
             return fechaHora.ToString($"yyyy{separadorFechaPartes}MM{separadorFechaPartes}dd{separadorFechaHora}HH{separadorHoraPartes}mm{(incluirSegundos ? $"{separadorHoraPartes}ss" : String.Empty)}");
         }
 
-        public static string FormatoHora(DateTime? fechaHora,
+        public static string Hora(DateTime? fechaHora,
             string textoVacio = "")
         {
             return fechaHora.HasValue
-                ? FormatoHora(fechaHora.Value)
+                ? Hora(fechaHora.Value)
                 : textoVacio;
         }
 
-        public static string FormatoHora(DateTime fechaHora)
+        public static string Hora(DateTime fechaHora)
         {
             return fechaHora.ToString("HH:mm");
         }
 
-        public static string FormatoHora(TimeSpan? hora,
+        public static string Hora(TimeSpan? hora,
             string textoVacio = "")
         {
             return hora.HasValue
-                ? FormatoHora(hora.Value)
+                ? Hora(hora.Value)
                 : textoVacio;
         }
 
-        public static string FormatoHora(TimeSpan hora)
+        public static string Hora(TimeSpan hora)
         {
             return hora.ToString("hh\\:mm");
         }
 
-        public static string FormatoFechaYHoraStandard(DateTime fechaHora)
+        public static string FechaYHoraStandard(DateTime fechaHora)
         {
             return fechaHora.ToString("s");
         }
 
-        public static string FormatoTiempo(TimeSpan? tiempo,
+        public static string Tiempo(TimeSpan? tiempo,
             string textoVacio = "")
         {
             return tiempo.HasValue
-                ? FormatoTiempo(tiempo)
+                ? Tiempo(tiempo)
                 : textoVacio;
         }
 
-        public static string FormatoTiempo(TimeSpan tiempo)
+        public static string Tiempo(TimeSpan tiempo)
         {
             var partes = new List<string>();
             if (tiempo.Hours > 0)
@@ -293,13 +347,7 @@ namespace namasdev.Core.Types
             {
                 partes.Add($"{tiempo:ss}s");
             }
-            return FormatoLista(partes, " ");
-        }
-
-        public static string FormatoPorcentaje(double valor, 
-            int cantDecimales = 0)
-        {
-            return valor.ToString($"P{cantDecimales}");
+            return Lista(partes, " ");
         }
     }
 }

@@ -87,7 +87,7 @@ namespace namasdev.Core.Types
         {
             if (hasta < desde)
             {
-                throw new ExcepcionMensajeAlUsuario($"Rango no válido ({Formateador.FormatoFechaYHora(desde)} - {Formateador.FormatoFechaYHora(hasta)}).");
+                throw new ExcepcionMensajeAlUsuario($"Rango no válido ({Formateador.FechaYHora(desde)} - {Formateador.FechaYHora(hasta)}).");
             }
         }
 
