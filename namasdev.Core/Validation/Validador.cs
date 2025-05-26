@@ -17,8 +17,10 @@ namespace namasdev.Core.Validation
     public class Validador
     {
         public const string REQUERIDO_TEXTO_FORMATO = "{0} es un dato requerido.";
-        public const string TAMAÑO_MAXIMO_TEXTO_FORMATO = "{0} debe tener hasta {1} caracteres.";
-        public const string TAMAÑO_EXACTO_TEXTO_FORMATO = "{0} debe tener exactamente {1} caracteres.";
+        public const string TEXTO_TAMAÑO_MINIMO_TEXTO_FORMATO = "{0} debe tener al menos {1} caracteres.";
+        public const string TEXTO_TAMAÑO_MAXIMO_TEXTO_FORMATO = "{0} debe tener hasta {1} caracteres.";
+        public const string TEXTO_TAMAÑO_RANGO_TEXTO_FORMATO = "{0} debe tener entre {1} y {2} caracteres.";
+        public const string TEXTO_TAMAÑO_EXACTO_TEXTO_FORMATO = "{0} debe tener exactamente {1} caracteres.";
         public const string TIPO_NO_VALIDO_TEXTO_FORMATO = "{0} no es un dato de tipo {1} válido.";
         public const string ENTIDAD_INEXISTENTE_TEXTO_FORMATO = "{0} inexistente ({1}).";
         public const string ENTIDAD_BORRADA_TEXTO_FORMATO = "{0} se encontraba borrad{1} con anterioridad ({2}).";
@@ -268,9 +270,11 @@ namespace namasdev.Core.Validation
             return extensiones.Split(',');
         }
 
-        public static bool ValidarString(string valor, string nombre, bool requerido,
+        public static bool ValidarString(
+            string valor, string nombre, bool requerido,
             out string mensajeError,
-            int? tamañoMaximo = null, int? tamañoExacto = null, string regEx = null)
+            int? tamañoMaximo = null, int? tamañoMinimo = null, int? tamañoExacto = null, 
+            string regEx = null)
         {
             if (String.IsNullOrWhiteSpace(valor))
             {
@@ -282,17 +286,40 @@ namespace namasdev.Core.Validation
             }
             else
             {
-                if (tamañoExacto.HasValue && valor.Length != tamañoExacto.Value)
+                if (tamañoExacto.HasValue)
                 {
-                    mensajeError = String.Format(TAMAÑO_EXACTO_TEXTO_FORMATO, nombre, tamañoExacto);
-                    return false;
+                    if (valor.Length != tamañoExacto.Value)
+                    {
+                        mensajeError = MensajeTextoExacto(nombre, tamañoExacto.Value);
+                        return false;
+                    }
                 }
-                else if (tamañoMaximo.HasValue && valor.Length > tamañoMaximo.Value)
+                else if (tamañoMinimo.HasValue && tamañoMaximo.HasValue)
                 {
-                    mensajeError = MensajeTextoTamañoMaximo(nombre, tamañoMaximo.Value);
-                    return false;
+                    if (valor.Length < tamañoMinimo.Value
+                        || valor.Length > tamañoMaximo.Value)
+                    {
+                        mensajeError = MensajeTextoRango(nombre, tamañoMinimo.Value, tamañoMaximo.Value);
+                        return false;
+                    }
                 }
-
+                else if (tamañoMinimo.HasValue)
+                {
+                    if (valor.Length < tamañoMinimo.Value)
+                    {
+                        mensajeError = MensajeTextoTamañoMinimo(nombre, tamañoMinimo.Value);
+                        return false;
+                    }
+                }
+                else if (tamañoMaximo.HasValue)
+                {
+                    if (valor.Length > tamañoMaximo.Value)
+                    {
+                        mensajeError = MensajeTextoTamañoMaximo(nombre, tamañoMaximo.Value);
+                        return false;
+                    }
+                }
+                
                 if (!String.IsNullOrWhiteSpace(regEx))
                 {
                     if (!Regex.IsMatch(valor, regEx))
@@ -307,9 +334,11 @@ namespace namasdev.Core.Validation
             return true;
         }
 
-        public static bool ValidarStringYAgregarAListaErrores(string valor, string nombre, bool requerido,
+        public static bool ValidarStringYAgregarAListaErrores(
+            string valor, string nombre, bool requerido,
             List<string> errores,
-            int? tamañoMaximo = null, int? tamañoExacto = null, string regEx = null)
+            int? tamañoMaximo = null, int? tamañoMinimo = null, int? tamañoExacto = null, 
+            string regEx = null)
         {
             return ValidarYAgregarAListaErrores(
                 () =>
@@ -317,6 +346,7 @@ namespace namasdev.Core.Validation
                     ValidarString(valor, nombre, requerido,
                         out string mensajeError,
                         tamañoMaximo: tamañoMaximo,
+                        tamañoMinimo: tamañoMinimo,
                         tamañoExacto: tamañoExacto,
                         regEx: regEx);
 
@@ -482,17 +512,17 @@ namespace namasdev.Core.Validation
                         return false;
                     }
                 }
-                else if (valorMinimo.HasValue)
+                else
                 {
-                    if (valor < valorMinimo)
+                    if (valorMinimo.HasValue
+                        && valor < valorMinimo)
                     {
                         mensajeError = String.Format(NUMERO_MAYOR_A_TEXTO_FORMATO, nombre, Formateador.Numero(valorMinimo, cantDecimales: cantDecimales));
                         return false;
                     }
-                }
-                else if (valorMaximo.HasValue)
-                {
-                    if (valor > valorMaximo)
+
+                    if (valorMaximo.HasValue
+                        && valor > valorMaximo)
                     {
                         mensajeError = String.Format(NUMERO_MENOR_A_TEXTO_FORMATO, nombre, Formateador.Numero(valorMaximo, cantDecimales: cantDecimales));
                         return false;
@@ -776,9 +806,24 @@ namespace namasdev.Core.Validation
             return String.Format(REQUERIDO_TEXTO_FORMATO, nombre);
         }
 
+        public static string MensajeTextoExacto(string nombre, int tamaño)
+        {
+            return String.Format(TEXTO_TAMAÑO_EXACTO_TEXTO_FORMATO, nombre, tamaño);
+        }
+
+        public static string MensajeTextoTamañoMinimo(string nombre, int tamañoMinimo)
+        {
+            return String.Format(TEXTO_TAMAÑO_MINIMO_TEXTO_FORMATO, nombre, tamañoMinimo);
+        }
+
         public static string MensajeTextoTamañoMaximo(string nombre, int tamañoMaximo)
         {
-            return String.Format(TAMAÑO_MAXIMO_TEXTO_FORMATO, nombre, tamañoMaximo);
+            return String.Format(TEXTO_TAMAÑO_MAXIMO_TEXTO_FORMATO, nombre, tamañoMaximo);
+        }
+
+        public static string MensajeTextoRango(string nombre, int tamañoMinimo, int tamañoMaximo)
+        {
+            return String.Format(TEXTO_TAMAÑO_RANGO_TEXTO_FORMATO, nombre, tamañoMinimo, tamañoMaximo);
         }
 
         #endregion
