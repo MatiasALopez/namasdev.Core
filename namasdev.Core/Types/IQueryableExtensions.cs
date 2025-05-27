@@ -25,7 +25,8 @@ namespace namasdev.Core.Types
         public static IQueryable<T> OrdenarYPaginar<T>(this IQueryable<T> query, OrdenYPaginacionParametros ordenYPaginacion,
             string ordenDefault = null)
         {
-            ordenDefault = ordenDefault ?? ordenYPaginacion?.OrdenDefault;
+            ordenDefault = (ordenDefault ?? ordenYPaginacion?.OrdenDefault)
+                .ValueNotEmptyOrNull(valorNull: "1");
 
             if (ordenYPaginacion == null)
             {
