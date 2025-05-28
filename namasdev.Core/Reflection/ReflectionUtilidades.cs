@@ -8,6 +8,16 @@ namespace namasdev.Core.Reflection
 {
     public class ReflectionHelper
     {
+        public static bool ClaseImplementaInterfaz<TEntidad, TInterfaz>()
+        {
+            return ClaseImplementaInterfaz(typeof(TEntidad), typeof(TInterfaz));
+        }
+
+        public static bool ClaseImplementaInterfaz(Type tipoClase, Type tipoInterfaz)
+        {
+            return tipoInterfaz.IsAssignableFrom(tipoClase);
+        }
+
         public static object ObtenerValorDefault<T>()
         {
             return ObtenerValorDefault(typeof(T));
