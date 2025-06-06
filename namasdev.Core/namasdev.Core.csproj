@@ -88,6 +88,7 @@
     <Compile Include="Types\IQueryableExtensions.cs" />
     <Compile Include="Types\MesYAño.cs" />
     <Compile Include="Types\NameValueCollectionExtensiones.cs" />
+    <Compile Include="Types\NumerosHelper.cs" />
     <Compile Include="Types\OrdenYPaginacionParametros.cs" />
     <Compile Include="Types\RangoFechas.cs" />
     <Compile Include="Types\StringExtensiones.cs" />
